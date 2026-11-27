@@ -6,8 +6,14 @@ import { searchMenu } from "@/lib/menu.mjs";
 import styles from "./HomePage.module.css";
 
 export default function HomePage() {
-  const [query, setQuery] = useState("");
-  const dishes = searchMenu(menuItems, query);
+const [query, setQuery] = useState("");
+const [selectedCategory, setSelectedCategory] = useState("All");
+
+const categories = ["All", ...new Set(menuItems.map((item) => item.category))];
+
+const dishes = searchMenu(menuItems, query).filter(
+  (item) => selectedCategory === "All" || item.category === selectedCategory
+);
 
   return (
     <main id="home" className={styles.page}>
@@ -51,6 +57,24 @@ export default function HomePage() {
             />
           </div>
         </div>
+
+        <div
+  className={styles.filters}
+  role="group"
+  aria-label="Filter menu by category"
+>
+  {categories.map((category) => (
+    <button
+      key={category}
+      type="button"
+      className={styles.filterButton}
+      aria-pressed={selectedCategory === category}
+      onClick={() => setSelectedCategory(category)}
+    >
+      {category}
+    </button>
+  ))}
+</div>
 
         <p id="menu-results" className={styles.resultCount} role="status">
           {dishes.length} {dishes.length === 1 ? "dish" : "dishes"} available
